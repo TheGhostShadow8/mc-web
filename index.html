@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bedrock Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock Portal</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #111; }
-        /* This container helps bypass some browser blocks */
-        .game-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-        iframe { width: 100%; height: 100%; border: none; }
+        body { background: #111; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        .btn { background: #388e3c; color: white; padding: 20px 40px; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; text-decoration: none; }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <iframe src="https://via.shog.gg/minecraft/" allow="fullscreen; autoplay; gamepad; keyboard"></iframe>
-    </div>
+    <img src="https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png" width="150" style="border-radius: 15px; margin-bottom: 20px;">
+    <h2>Minecraft Bedrock Web</h2>
+    <p>Launching the latest version...</p>
+    <br>
+    <a href="https://now.gg/apps/mojang/100/minecraft.html" class="btn">START GAME</a>
+
+    <script>
+        // This automatically opens the game after 3 seconds
+        setTimeout(function(){
+            window.location.href = "https://now.gg/apps/mojang/100/minecraft.html";
+        }, 3000);
+    </script>
 </body>
 </html>
