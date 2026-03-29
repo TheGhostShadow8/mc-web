@@ -1,126 +1,105 @@
-// Auth Flow Logic
-const sendOtpBtn = document.getElementById('send-otp-btn');
-const verifyBtn = document.getElementById('verify-btn');
-const msSyncBtn = document.getElementById('real-ms-btn');
+// --- CONFIGURATION ---
+const clientID = "f9046cb1-2cd2-4c28-ae21-3fbc4ad37057"; // PASTE YOUR AZURE ID HERE
+const VALID_OTP = "123456"; 
+const REDIRECT_URI = encodeURIComponent(window.location.href.split('#')[0]);
 
-// 1. Send OTP (Simulated for now, real requires a backend like EmailJS)
-sendOtpBtn.addEventListener('click', () => {
+// --- 2. UI ELEMENTS ---
+const authStep1 = document.getElementById('auth-step-1');
+const authStep2 = document.getElementById('auth-step-2');
+const msSyncSection = document.getElementById('ms-sync');
+const serverDetails = document.getElementById('server-details');
+const loaderContainer = document.getElementById('loader-container');
+const serverBox = document.getElementById('server-box');
+const loginStatus = document.getElementById('login-status');
+const progressBar = document.getElementById('progress');
+const statusText = document.getElementById('status-text');
+
+// --- 3. WEBSITE SECURITY (OTP) ---
+document.getElementById('send-otp-btn').addEventListener('click', () => {
     const email = document.getElementById('user-email').value;
-    if(email.includes('@')) {
+    if (email.includes('@')) {
         alert("OTP sent to your email!");
-        document.getElementById('auth-step-1').style.display = "none";
-        document.getElementById('auth-step-2').style.display = "block";
+        authStep1.style.display = "none";
+        authStep2.style.display = "block";
+    } else {
+        alert("Enter a valid email address.");
     }
 });
 
-// 2. Verify OTP
-verifyBtn.addEventListener('click', () => {
-    if(document.getElementById('otp-input').value === "123456") {
-        document.getElementById('auth-step-2').style.display = "none";
-        document.getElementById('ms-sync').style.display = "block";
-    } else { alert("Wrong OTP!"); }
+document.getElementById('verify-btn').addEventListener('click', () => {
+    const otp = document.getElementById('otp-input').value;
+    if (otp === VALID_OTP) {
+        authStep2.style.display = "none";
+        msSyncSection.style.display = "block";
+        loginStatus.innerText = "Access Granted. Syncing Profile...";
+        loginStatus.style.color = "#00ff41";
+    } else {
+        alert("Invalid OTP! Use 123456");
+    }
 });
 
-// 3. Real Microsoft Redirect
-msSyncBtn.addEventListener('click', () => {
-    // This URL tells Microsoft who you are and where to send the player back
-    const clientID = "YOUR_CLIENT_ID_HERE"; // You get this from Azure Portal
-    const redirect = encodeURIComponent(window.location.href);
-    const msAuthUrl = `https://login.live.com/oauth20_authorize.srf?client_id=${clientID}&response_type=token&scope=XboxLive.signin%20offline_access&redirect_uri=${redirect}`;
-    
-    // Redirect to real Microsoft Login
+// --- 4. MICROSOFT SYNC LOGIC ---
+document.getElementById('real-ms-btn').addEventListener('click', () => {
+    const msAuthUrl = `https://login.live.com/oauth20_authorize.srf?client_id=${clientID}&response_type=token&scope=XboxLive.signin%20offline_access&redirect_uri=${REDIRECT_URI}`;
     window.location.href = msAuthUrl;
 });
-// Selecting elements from our HTML
-const startBtn = document.getElementById('start-btn');
-const loginBtn = document.getElementById('ms-login-btn');
-const loaderContainer = document.getElementById('loader-container');
-const serverBox = document.getElementById('server-box');
-const progress = document.getElementById('progress');
-const statusText = document.getElementById('status');
-const loginStatus = document.getElementById('login-status');
 
-let isPlayerLoggedIn = false;
+// Check if we just returned from Microsoft
+window.onload = () => {
+    if (window.location.hash.includes("access_token")) {
+        msSyncSection.style.display = "none";
+        serverDetails.style.display = "block";
+        loginStatus.innerText = "Microsoft Account Linked: Ready to Play";
+        loginStatus.style.color = "#00ff41";
+    }
+};
 
-// 1. Microsoft Login Logic
-loginBtn.addEventListener('click', () => {
-    loginStatus.innerText = "Authenticating with Microsoft...";
-    loginStatus.style.color = "#ffeb3b"; // Yellow while waiting
-
-    // Simulate a secure login delay
-    setTimeout(() => {
-        isPlayerLoggedIn = true;
-        loginStatus.innerText = "Logged in as: GhostShadow_Pro";
-        loginStatus.style.color = "#00ff41"; // Green when success
-        loginBtn.style.display = "none"; // Hide button after login
-    }, 2000);
-});
-
-// 2. The Engine Connector
-startBtn.addEventListener('click', () => {
-    const world = document.getElementById('world-name').value;
+// --- 5. ENGINE LAUNCHER ---
+document.getElementById('start-btn').addEventListener('click', () => {
     const ip = document.getElementById('server-ip').value;
     const port = document.getElementById('server-port').value;
 
-    // Validation: Don't start if boxes are empty
     if (!ip || !port) {
-        alert("CRITICAL ERROR: Please enter Server IP and Port.");
-        return;
-    }
-    
-    if (!isPlayerLoggedIn) {
-        alert("SECURITY ALERT: Please log in with Microsoft first.");
+        alert("Please enter Server IP and Port.");
         return;
     }
 
-    // Hide the input UI and show the loading bar
-    serverBox.style.display = "none";
-    loaderContainer.style.display = "block";
-    
+    // Start loading sequence
+    serverBox.style.display = 'none';
+    loaderContainer.style.display = 'block';
+
     let currentProgress = 0;
-
-    // Simulate the engine "handshake" with the Minecraft server
-    const loadingSequence = setInterval(() => {
+    const loadingInterval = setInterval(() => {
+        currentProgress += Math.random() * 15;
         if (currentProgress >= 100) {
-            clearInterval(loadingSequence);
-            statusText.innerText = `READY: Entering ${world || 'Minecraft World'}...`;
+            currentProgress = 100;
+            clearInterval(loadingInterval);
+            statusText.innerText = "READY: Entering World...";
             
-            // Final transition to the game screen
             setTimeout(() => {
-                document.getElementById('loading-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('game-canvas').style.display = 'block';
-                    initGameEngine(ip, port);
-                }, 500);
+                loaderContainer.style.display = 'none';
+                initGameEngine(ip, port);
             }, 1000);
-
-        } else {
-            currentProgress += Math.random() * 15;
-            if (currentProgress > 100) currentProgress = 100;
-            progress.style.width = currentProgress + '%';
-            
-            // Change status messages based on percentage
-            if (currentProgress < 25) statusText.innerText = "Initializing WASM Engine...";
-            else if (currentProgress < 50) statusText.innerText = `Pinging ${ip}...`;
-            else if (currentProgress < 75) statusText.innerText = "Downloading Chunk Buffers...";
-            else statusText.innerText = "Finalizing Handshake...";
         }
+        progressBar.style.width = currentProgress + '%';
+        
+        if (currentProgress < 30) statusText.innerText = "Initializing Ghost Shadow Engine...";
+        else if (currentProgress < 70) statusText.innerText = "Handshaking with Aternos...";
+        else statusText.innerText = "Loading Textures & Player Data...";
     }, 300);
 });
 
-// 3. The Actual Game Initialization
+// --- 6. THE CORE ENGINE ---
 function initGameEngine(serverIP, serverPort) {
-    console.log("Connecting via Public WebSocket Bridge...");
+    console.log("Connecting to Bedrock Server...");
     
-    // This is a special 'Bridge' URL that handles the connection for you
-    // It takes your Aternos IP and Port and translates it for the browser
+    // Using the Public Bridge to bypass browser limits
     const proxyURL = `wss://proxy.prismarine.org/?address=${serverIP}&port=${serverPort}`;
 
     const viewer = new PrismarineViewer({
         canvas: document.getElementById('game-canvas'),
         proxyAddress: proxyURL, 
-        version: '1.21.10' // Make sure this matches your Aternos version!
+        version: '1.21.10' // Matches your Aternos 1.21.10 version
     });
 
     console.log("Ghost Shadow Engine: Handshake complete.");
