@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const clientID = "f9046cb1-2cd2-4c28-ae21-3fbc4ad37057"; // PASTE YOUR AZURE ID HERE
+const clientID = "5ab6e69d-8770-40e1-9f06-82b647dfbd58"; // PASTE YOUR AZURE ID HERE
 const VALID_OTP = "123456"; 
 const REDIRECT_URI = encodeURIComponent(window.location.href.split('#')[0]);
 
