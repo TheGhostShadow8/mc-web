@@ -3,17 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ghost Shadow Engine</title>
+    <title>Ghost Shadow Engine | Bedrock Web</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div id="loading-screen">
         <div class="logo">GHOST SHADOW</div>
-        <div class="loader-bar">
-            <div id="progress"></div>
+        
+        <div id="server-box">
+            <h3 style="color: #00ff41; margin-bottom: 15px;">SERVER SETTINGS</h3>
+            
+            <input type="text" id="world-name" placeholder="World Name (e.g. My Survival)">
+            <input type="text" id="server-ip" placeholder="Server IP (e.g. name.aternos.me)">
+            <input type="number" id="server-port" placeholder="Port (e.g. 19132)">
+            
+            <button id="ms-login-btn">Log in with Microsoft</button>
+            <p id="login-status">Not Logged In</p>
+            
+            <button id="start-btn">CONNECT TO WORLD</button>
         </div>
-        <p id="status">Initializing Engine...</p>
-        <button id="start-btn" style="display:none;">ENTER WORLD</button>
+
+        <div id="loader-container" style="display:none; width: 80%;">
+            <div class="loader-bar">
+                <div id="progress"></div>
+            </div>
+            <p id="status" style="margin-top: 15px;">Initializing Connection...</p>
+        </div>
     </div>
 
     <canvas id="game-canvas"></canvas>
