@@ -12,29 +12,29 @@
         <div class="logo">GHOST SHADOW</div>
         
         <div id="server-box">
-            <h3 style="color: #00ff41; margin-bottom: 15px;">SERVER SETTINGS</h3>
-            
-            <input type="text" id="world-name" placeholder="World Name (e.g. My Survival)">
-            <input type="text" id="server-ip" placeholder="Server IP (e.g. name.aternos.me)">
-            <input type="number" id="server-port" placeholder="Port (e.g. 19132)">
-            
-            <button id="ms-login-btn">Log in with Microsoft</button>
-            <p id="login-status">Not Logged In</p>
-            
-            <button id="start-btn">CONNECT TO WORLD</button>
-        </div>
-
-        <div id="loader-container" style="display:none; width: 80%;">
-            <div class="loader-bar">
-                <div id="progress"></div>
-            </div>
-            <p id="status" style="margin-top: 15px;">Initializing Connection...</p>
-        </div>
+    <h3 style="color: #00ff41;">GHOST SHADOW | SECURE LOGIN</h3>
+    
+    <div id="auth-step-1">
+        <input type="email" id="user-email" placeholder="Email Address">
+        <button id="send-otp-btn">SEND LOGIN OTP</button>
     </div>
 
-    <canvas id="game-canvas"></canvas>
+    <div id="auth-step-2" style="display:none;">
+        <input type="number" id="otp-input" placeholder="6-Digit Code">
+        <button id="verify-btn">VERIFY ACCESS</button>
+    </div>
 
-    <script src="https://unpkg.com/prismarine-viewer@1.21.0/dist/viewer.js"></script>
-    <script src="loader.js"></script>
-</body>
-</html>
+    <div id="ms-sync" style="display:none;">
+        <p style="font-size: 0.8rem; color: #aaa;">Access Granted. Now Sync Xbox Profile:</p>
+        <button id="real-ms-btn" style="background: #0078d4; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; font-weight: bold;">SYNC MICROSOFT ACCOUNT</button>
+    </div>
+
+    <div id="server-details" style="display:none; margin-top:15px; border-top: 1px solid #333; padding-top: 10px;">
+        <input type="text" id="world-name" placeholder="World Name">
+        <input type="text" id="server-ip" value="Occults8.aternos.me">
+        <input type="number" id="server-port" value="48439">
+        <button id="start-btn">LAUNCH BEDROCK ENGINE</button>
+    </div>
+    
+    <p id="login-status" style="font-size: 0.7rem; margin-top: 10px;">Status: Encrypted</p>
+</div>
