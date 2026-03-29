@@ -2,44 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Bedrock Launcher</title>
-    <style>
-        body { 
-            background: #1a1a1a; 
-            color: #f0f0f0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0;
-            text-align: center;
-        }
-        .container { padding: 20px; border: 2px solid #388e3c; border-radius: 15px; background: #252525; }
-        h1 { color: #4caf50; margin-bottom: 10px; }
-        .play-btn { 
-            background: #4caf50; 
-            color: white; 
-            padding: 15px 30px; 
-            text-decoration: none; 
-            font-weight: bold; 
-            border-radius: 5px; 
-            font-size: 1.2rem;
-            display: inline-block;
-            margin-top: 20px;
-            box-shadow: 0 4px #2e7d32;
-        }
-        .play-btn:active { box-shadow: 0 2px #2e7d32; transform: translateY(2px); }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ghost Shadow Engine</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Minecraft Bedrock</h1>
-        <p>Latest Version (1.21+)</p>
-        <p>No Download Required</p>
-        <a href="https://now.gg/apps/mojang/100/minecraft.html" class="play-btn">LAUNCH GAME</a>
+    <div id="loading-screen">
+        <div class="logo">GHOST SHADOW</div>
+        <div class="loader-bar">
+            <div id="progress"></div>
+        </div>
+        <p id="status">Initializing Engine...</p>
+        <button id="start-btn" style="display:none;">ENTER WORLD</button>
     </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <script src="https://unpkg.com/prismarine-viewer@1.21.0/dist/viewer.js"></script>
+    <script src="loader.js"></script>
 </body>
 </html>
