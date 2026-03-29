@@ -78,17 +78,17 @@ startBtn.addEventListener('click', () => {
 
 // 3. The Actual Game Initialization
 function initGameEngine(serverIP, serverPort) {
-    console.log("Connecting via WebSocket Bridge...");
+    console.log("Connecting via Public WebSocket Bridge...");
     
-    // This is a public bridge that converts Browser WebSockets to Minecraft TCP
-    const bridgeURL = `wss://connect.wsmc.net/?server=${serverIP}&port=${serverPort}`;
+    // This is a special 'Bridge' URL that handles the connection for you
+    // It takes your Aternos IP and Port and translates it for the browser
+    const proxyURL = `wss://proxy.prismarine.org/?address=${serverIP}&port=${serverPort}`;
 
-    // Initialize the Prismarine Viewer on your Canvas
     const viewer = new PrismarineViewer({
         canvas: document.getElementById('game-canvas'),
-        proxyAddress: bridgeURL, 
-        version: '1.21' // Set this to match your server version
+        proxyAddress: proxyURL, 
+        version: '1.21' // Make sure this matches your Aternos version!
     });
 
-    console.log("Engine Active. Rendering world...");
+    console.log("Ghost Shadow Engine: Handshake complete.");
 }
