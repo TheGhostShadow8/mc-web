@@ -1,3 +1,36 @@
+// Auth Flow Logic
+const sendOtpBtn = document.getElementById('send-otp-btn');
+const verifyBtn = document.getElementById('verify-btn');
+const msSyncBtn = document.getElementById('real-ms-btn');
+
+// 1. Send OTP (Simulated for now, real requires a backend like EmailJS)
+sendOtpBtn.addEventListener('click', () => {
+    const email = document.getElementById('user-email').value;
+    if(email.includes('@')) {
+        alert("OTP sent to your email!");
+        document.getElementById('auth-step-1').style.display = "none";
+        document.getElementById('auth-step-2').style.display = "block";
+    }
+});
+
+// 2. Verify OTP
+verifyBtn.addEventListener('click', () => {
+    if(document.getElementById('otp-input').value === "123456") {
+        document.getElementById('auth-step-2').style.display = "none";
+        document.getElementById('ms-sync').style.display = "block";
+    } else { alert("Wrong OTP!"); }
+});
+
+// 3. Real Microsoft Redirect
+msSyncBtn.addEventListener('click', () => {
+    // This URL tells Microsoft who you are and where to send the player back
+    const clientID = "YOUR_CLIENT_ID_HERE"; // You get this from Azure Portal
+    const redirect = encodeURIComponent(window.location.href);
+    const msAuthUrl = `https://login.live.com/oauth20_authorize.srf?client_id=${clientID}&response_type=token&scope=XboxLive.signin%20offline_access&redirect_uri=${redirect}`;
+    
+    // Redirect to real Microsoft Login
+    window.location.href = msAuthUrl;
+});
 // Selecting elements from our HTML
 const startBtn = document.getElementById('start-btn');
 const loginBtn = document.getElementById('ms-login-btn');
