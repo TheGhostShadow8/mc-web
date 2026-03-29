@@ -1,0 +1,20 @@
+body, html { margin: 0; padding: 0; background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; }
+
+#loading-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(circle, #1a1a1a 0%, #000 100%); z-index: 10;
+}
+
+.logo { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; text-shadow: 0 0 10px #00ff41; }
+
+.loader-bar { width: 80%; height: 10px; background: #222; border-radius: 5px; overflow: hidden; border: 1px solid #00ff41; }
+
+#progress { width: 0%; height: 100%; background: #00ff41; transition: width 0.5s; }
+
+#game-canvas { width: 100%; height: 100%; display: none; }
+
+#start-btn {
+    margin-top: 20px; padding: 15px 30px; background: #00ff41; color: black;
+    border: none; font-weight: bold; cursor: pointer; border-radius: 5px;
+}
