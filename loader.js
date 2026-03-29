@@ -87,7 +87,7 @@ function initGameEngine(serverIP, serverPort) {
     const viewer = new PrismarineViewer({
         canvas: document.getElementById('game-canvas'),
         proxyAddress: proxyURL, 
-        version: '1.21' // Make sure this matches your Aternos version!
+        version: '1.21.10' // Make sure this matches your Aternos version!
     });
 
     console.log("Ghost Shadow Engine: Handshake complete.");
