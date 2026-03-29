@@ -2,39 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ghost Shadow Engine | Bedrock Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOST SHADOW | Bedrock Engine</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body { background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; }
+        #server-box { background: rgba(20, 20, 20, 0.9); border: 2px solid #00ff41; padding: 25px; border-radius: 15px; width: 320px; margin: 50px auto; box-shadow: 0 0 20px #00ff41; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #111; color: #00ff41; border: 1px solid #333; border-radius: 5px; outline: none; }
+        button { width: 95%; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        #send-otp-btn { background: #4caf50; color: white; }
+        #verify-btn { background: #00ff41; color: black; }
+        #real-ms-btn { background: #0078d4; color: white; }
+        #start-btn { background: #00ff41; color: black; font-size: 1.1rem; }
+        .loading-container { display: none; margin-top: 20px; }
+        #progress-bg { background: #222; width: 100%; height: 10px; border-radius: 5px; overflow: hidden; }
+        #progress { background: #00ff41; width: 0%; height: 100%; transition: width 0.3s; }
+        #game-canvas { width: 100%; height: 100vh; display: none; background: black; }
+    </title>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="logo">GHOST SHADOW</div>
+    <div id="server-box">
+        <h2 style="color: #00ff41; text-transform: uppercase; letter-spacing: 2px;">Ghost Shadow Engine</h2>
         
-        <div id="server-box">
-    <h3 style="color: #00ff41;">GHOST SHADOW | SECURE LOGIN</h3>
-    
-    <div id="auth-step-1">
-        <input type="email" id="user-email" placeholder="Email Address">
-        <button id="send-otp-btn">SEND LOGIN OTP</button>
+        <div id="auth-step-1">
+            <p style="font-size: 0.8rem; color: #888;">Enter registered email to receive OTP</p>
+            <input type="email" id="user-email" placeholder="Email Address">
+            <button id="send-otp-btn">SEND SECURITY CODE</button>
+        </div>
+
+        <div id="auth-step-2" style="display:none;">
+            <p style="font-size: 0.8rem; color: #888;">Check your inbox (use 123456 for now)</p>
+            <input type="number" id="otp-input" placeholder="6-Digit Code">
+            <button id="verify-btn">VERIFY ACCESS</button>
+        </div>
+
+        <div id="ms-sync" style="display:none;">
+            <p style="font-size: 0.8rem; color: #aaa;">Access Verified. Sync Xbox Profile for Skin/Progress:</p>
+            <button id="real-ms-btn">SYNC MICROSOFT ACCOUNT</button>
+        </div>
+
+        <div id="server-details" style="display:none;">
+            <input type="text" id="server-ip" value="Occults8.aternos.me">
+            <input type="number" id="server-port" value="48439">
+            <button id="start-btn">LAUNCH BEDROCK ENGINE</button>
+        </div>
+
+        <p id="login-status" style="font-size: 0.7rem; color: #555; margin-top: 15px;">Protocol: Encrypted AES-256</p>
     </div>
 
-    <div id="auth-step-2" style="display:none;">
-        <input type="number" id="otp-input" placeholder="6-Digit Code">
-        <button id="verify-btn">VERIFY ACCESS</button>
+    <div id="loader-container" class="loading-container">
+        <p id="status-text" style="color: #00ff41; font-size: 0.9rem;">Initializing...</p>
+        <div id="progress-bg">
+            <div id="progress"></div>
+        </div>
     </div>
 
-    <div id="ms-sync" style="display:none;">
-        <p style="font-size: 0.8rem; color: #aaa;">Access Granted. Now Sync Xbox Profile:</p>
-        <button id="real-ms-btn" style="background: #0078d4; color: white; padding: 10px; border: none; border-radius: 5px; width: 100%; font-weight: bold;">SYNC MICROSOFT ACCOUNT</button>
-    </div>
+    <canvas id="game-canvas"></canvas>
 
-    <div id="server-details" style="display:none; margin-top:15px; border-top: 1px solid #333; padding-top: 10px;">
-        <input type="text" id="world-name" placeholder="World Name">
-        <input type="text" id="server-ip" value="Occults8.aternos.me">
-        <input type="number" id="server-port" value="48439">
-        <button id="start-btn">LAUNCH BEDROCK ENGINE</button>
-    </div>
-    
-    <p id="login-status" style="font-size: 0.7rem; margin-top: 10px;">Status: Encrypted</p>
-</div>
+    <script src="https://unpkg.com/prismarine-viewer/dist/viewer.js"></script>
+    <script src="loader.js"></script>
+</body>
+</html>
