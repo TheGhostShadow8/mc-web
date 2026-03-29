@@ -78,7 +78,17 @@ startBtn.addEventListener('click', () => {
 
 // 3. The Actual Game Initialization
 function initGameEngine(serverIP, serverPort) {
-    console.log(`Connecting to ${serverIP}:${serverPort} via Ghost Shadow Engine`);
-    // This is where the Prismarine Viewer library takes over the Canvas
-    // and renders the 3D world using WebGL.
+    console.log("Connecting via WebSocket Bridge...");
+    
+    // This is a public bridge that converts Browser WebSockets to Minecraft TCP
+    const bridgeURL = `wss://connect.wsmc.net/?server=${serverIP}&port=${serverPort}`;
+
+    // Initialize the Prismarine Viewer on your Canvas
+    const viewer = new PrismarineViewer({
+        canvas: document.getElementById('game-canvas'),
+        proxyAddress: bridgeURL, 
+        version: '1.21' // Set this to match your server version
+    });
+
+    console.log("Engine Active. Rendering world...");
 }
