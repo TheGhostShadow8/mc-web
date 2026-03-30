@@ -10,6 +10,7 @@
         body { background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; overflow: hidden; }
         #game-canvas { width: 100vw; height: 100vh; display: none; background: #000; position: absolute; top: 0; left: 0; z-index: 1; }
         #server-box { position: relative; z-index: 10; background: rgba(15, 15, 15, 0.95); border: 2px solid #00ff41; padding: 25px; border-radius: 15px; width: 320px; margin: 50px auto; box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); }
+        input::placeholder { color: #555; }
     </style>
 </head>
 <body>
@@ -25,25 +26,25 @@
         <div id="auth-step-1">
             <p style="font-size: 0.8rem; color: #888;">Enter registered email to receive OTP</p>
             <input type="email" id="user-email" placeholder="Email Address">
-            <button id="send-otp-btn" style="background: #2e7d32; color: white;">SEND SECURITY CODE</button>
+            <button id="send-otp-btn" style="background: #2e7d32; color: white; width: 100%;">SEND SECURITY CODE</button>
         </div>
 
         <div id="auth-step-2" style="display:none;">
             <p style="font-size: 0.8rem; color: #888;">Check your inbox (use 123456)</p>
             <input type="number" id="otp-input" placeholder="6-Digit Code">
-            <button id="verify-btn" style="background: #00ff41; color: black;">VERIFY ACCESS</button>
+            <button id="verify-btn" style="background: #00ff41; color: black; width: 100%;">VERIFY ACCESS</button>
         </div>
 
         <div id="ms-sync" style="display:none;">
             <p style="font-size: 0.8rem; color: #aaa;">Sync Xbox Profile for Skin/Progress:</p>
-            <button id="real-ms-btn" style="background: #0078d4; color: white;">SYNC MICROSOFT ACCOUNT</button>
+            <button id="real-ms-btn" style="background: #0078d4; color: white; width: 100%;">SYNC MICROSOFT ACCOUNT</button>
         </div>
 
         <div id="server-details" style="display:none;">
-            <p style="font-size: 0.8rem; color: #00ff41;">Engine Ready</p>
-            <input type="text" id="server-ip" value="Occults8.aternos.me">
-            <input type="number" id="server-port" value="48439">
-            <button id="start-btn" style="background: #00ff41; color: black;">LAUNCH BEDROCK ENGINE</button>
+            <p style="font-size: 0.8rem; color: #00ff41;">System Authenticated</p>
+            <input type="text" id="server-ip" placeholder="Server IP (or Dyn IP)">
+            <input type="number" id="server-port" placeholder="Server Port">
+            <button id="start-btn" style="background: #00ff41; color: black; width: 100%;">LAUNCH BEDROCK ENGINE</button>
         </div>
 
         <p id="login-status" style="font-size: 0.7rem; color: #555; margin-top: 15px;">Protocol: Encrypted AES-256</p>
