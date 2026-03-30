@@ -1,38 +1,36 @@
-body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
-#game-canvas { width: 100%; height: 100%; display: none; position: absolute; z-index: 1; }
+body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; touch-action: none; }
+#game-canvas { width: 100%; height: 100%; display: none; position: absolute; }
 
-/* Login Box Styling */
-#server-box { position: relative; z-index: 100; background: rgba(10,10,10,0.9); border: 2px solid #00ff41; padding: 20px; width: 300px; margin: 50px auto; border-radius: 10px; text-align: center; }
-input { width: 90%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid #444; color: #00ff41; }
-button { width: 95%; padding: 12px; cursor: pointer; border: none; font-weight: bold; border-radius: 5px; }
-#start-btn { background: #00ff41; color: black; }
-
-/* Mobile Controls Layer */
-#mobile-controls { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 50; pointer-events: none; }
-.ctrl-btn, .ctrl-btn-small, .jump-btn, .menu-btn, .inv-btn, .top-bar button { 
-    pointer-events: auto; background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 255, 255, 0.3); color: white; 
+/* Bedrock HUD Buttons */
+.ctrl-btn, .ctrl-btn-small, .action-circle, .jump-btn-bedrock {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.1);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* D-Pad Positioning */
+.active { background: rgba(255, 255, 255, 0.4) !important; transform: scale(0.95); }
+
+/* D-Pad */
 .dpad { position: absolute; bottom: 40px; left: 40px; display: flex; flex-direction: column; align-items: center; }
-.dpad-mid { display: flex; gap: 5px; }
-.ctrl-btn { width: 60px; height: 60px; font-size: 24px; }
-.ctrl-btn-small { width: 45px; height: 45px; margin: 5px; }
+.dpad-mid { display: flex; gap: 8px; }
+.ctrl-btn { width: 65px; height: 65px; font-size: 24px; }
+.ctrl-btn-small { width: 50px; height: 50px; margin: 5px; }
 
-/* Action Positioning */
-.action-btns { position: absolute; bottom: 60px; right: 50px; }
-.jump-btn { width: 90px; height: 90px; border-radius: 50%; font-weight: bold; }
+/* Action Buttons (Bedrock Style) */
+.action-btns { position: absolute; bottom: 50px; right: 50px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.action-circle { width: 70px; height: 70px; border-radius: 50%; background: rgba(0,0,0,0.3); }
+.jump-btn-bedrock { width: 100px; height: 100px; border-radius: 50%; font-size: 18px; }
 
-/* Top & Bottom Bar */
-.top-bar { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; }
-.top-bar button { width: 45px; height: 45px; border-radius: 5px; }
+/* Top Bar */
+.top-bar { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 60; }
+.top-bar button { width: 50px; height: 50px; background: rgba(0,0,0,0.5); border: 1px solid #777; pointer-events: auto; }
 
-.hotbar-container { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; align-items: flex-end; gap: 10px; }
-.hotbar { display: flex; background: rgba(0,0,0,0.4); padding: 4px; border: 1px solid #555; }
-.slot { width: 40px; height: 40px; border: 1px solid #666; margin: 2px; }
-.inv-btn { width: 50px; height: 50px; font-size: 20px; }
-
-/* Loader */
-#loader-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-#progress-bg { width: 70%; height: 8px; background: #222; border: 1px solid #00ff41; }
-#progress { height: 100%; background: #00ff41; width: 0%; }
+/* Chat Input */
+#chat-overlay { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; width: 80%; pointer-events: auto; }
+#chat-input { flex: 1; background: rgba(0,0,0,0.8); border: 1px solid #00ff41; color: white; padding: 10px; }
