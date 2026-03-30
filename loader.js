@@ -1,54 +1,94 @@
 const clientID = "5ab6e69d-8770-40e1-9f06-82b647dfbd58"; 
 
-// --- AUTH LOGIC ---
-document.getElementById('send-otp-btn').onclick = () => { document.getElementById('auth-step-1').style.display='none'; document.getElementById('auth-step-2').style.display='block'; };
-document.getElementById('verify-btn').onclick = () => { if(document.getElementById('otp-input').value === "123456") { document.getElementById('auth-step-2').style.display='none'; document.getElementById('ms-sync').style.display='block'; } };
-document.getElementById('real-ms-btn').onclick = () => { window.location.href = `https://login.live.com/oauth20_authorize.srf?client_id=${clientID}&response_type=token&scope=XboxLive.signin&redirect_uri=${encodeURIComponent(window.location.href)}`; };
+// --- 1. AUTHENTICATION ---
+const setupAuth = () => {
+    document.getElementById('send-otp-btn').onclick = () => {
+        document.getElementById('auth-step-1').style.display='none';
+        document.getElementById('auth-step-2').style.display='block';
+    };
+    document.getElementById('verify-btn').onclick = () => {
+        if(document.getElementById('otp-input').value === "123456") {
+            document.getElementById('auth-step-2').style.display='none';
+            document.getElementById('ms-sync').style.display='block';
+        }
+    };
+    document.getElementById('real-ms-btn').onclick = () => {
+        const url = `https://login.live.com/oauth20_authorize.srf?client_id=${clientID}&response_type=token&scope=XboxLive.signin&redirect_uri=${encodeURIComponent(window.location.href)}`;
+        window.location.href = url;
+    };
+};
+setupAuth();
 
-// --- LAUNCH ENGINE ---
+// --- 2. ENGINE LAUNCHER ---
 document.getElementById('start-btn').addEventListener('click', () => {
-    const ip = document.getElementById('server-ip').value.trim().split(':')[0];
+    const rawIP = document.getElementById('server-ip').value.trim();
+    const cleanIP = rawIP.includes(':') ? rawIP.split(':')[0] : rawIP;
     const port = document.getElementById('server-port').value.trim();
 
     document.getElementById('server-box').style.display = 'none';
     document.getElementById('loader-container').style.display = 'flex';
 
-    let p = 0;
-    const itv = setInterval(() => {
-        p += 10;
-        document.getElementById('progress').style.width = p + '%';
-        if(p >= 100) {
-            clearInterval(itv);
+    let progress = 0;
+    const bar = document.getElementById('progress');
+    const loadInt = setInterval(() => {
+        progress += 4;
+        bar.style.width = progress + '%';
+        if(progress >= 100) {
+            clearInterval(loadInt);
             document.getElementById('loader-container').style.display = 'none';
             document.getElementById('game-canvas').style.display = 'block';
             document.getElementById('mobile-controls').style.display = 'block';
-            initGameEngine(ip, port);
+            startCrossplayEngine(cleanIP, port);
         }
-    }, 100);
+    }, 60);
 });
 
-function initGameEngine(ip, port) {
+// --- 3. CORE CROSSPLAY ENGINE ---
+function startCrossplayEngine(ip, port) {
+    const canvas = document.getElementById('game-canvas');
     const viewer = new PrismarineViewer({
-        canvas: document.getElementById('game-canvas'),
+        canvas: canvas,
         proxyAddress: `wss://proxy.prismarine.org/?address=${ip}&port=${port}`,
-        version: '1.21.10'
+        version: '1.20.1' // Best for Geyser/Java Crossplay
     });
 
-    // --- MOBILE CONTROL MAPPING ---
-    const bindBtn = (id, key) => {
-        const btn = document.getElementById(id);
-        btn.ontouchstart = (e) => { e.preventDefault(); viewer.setControl(key, true); btn.style.background = "rgba(0,255,65,0.5)"; };
-        btn.ontouchend = (e) => { e.preventDefault(); viewer.setControl(key, false); btn.style.background = "rgba(255,255,255,0.15)"; };
+    // Button Logic
+    const bind = (id, key) => {
+        const el = document.getElementById(id);
+        el.ontouchstart = (e) => { e.preventDefault(); viewer.setControl(key, true); el.style.background="rgba(0,255,65,0.4)"; };
+        el.ontouchend = (e) => { e.preventDefault(); viewer.setControl(key, false); el.style.background="rgba(255,255,255,0.15)"; };
     };
 
-    bindBtn('btn-forward', 'forward');
-    bindBtn('btn-back', 'back');
-    bindBtn('btn-left', 'left');
-    bindBtn('btn-right', 'right');
-    bindBtn('btn-jump', 'jump');
-    bindBtn('btn-sneak', 'sneak');
+    bind('btn-forward', 'forward');
+    bind('btn-back', 'back');
+    bind('btn-left', 'left');
+    bind('btn-right', 'right');
+    bind('btn-jump', 'jump');
+    bind('btn-sneak', 'sneak');
+    bind('btn-attack', 'attack');
+    bind('btn-use', 'use');
 
-    // Menu Alerts
-    document.getElementById('btn-chat').onclick = () => alert("Chat Protocol Active");
-    document.getElementById('btn-settings').onclick = () => alert("Settings Engine Loading...");
+    // Swipe to Look
+    let lx, ly;
+    canvas.ontouchstart = (e) => { lx = e.touches[0].pageX; ly = e.touches[0].pageY; };
+    canvas.ontouchmove = (e) => {
+        viewer.camera.rotation.y -= (e.touches[0].pageX - lx) * 0.006;
+        viewer.camera.rotation.x -= (e.touches[0].pageY - ly) * 0.006;
+        lx = e.touches[0].pageX; ly = e.touches[0].pageY;
+    };
+
+    // Chat System
+    document.getElementById('btn-chat-toggle').onclick = () => {
+        const tray = document.getElementById('chat-overlay');
+        tray.style.display = tray.style.display === 'none' ? 'flex' : 'none';
+    };
+
+    document.getElementById('btn-send-chat').onclick = () => {
+        const msg = document.getElementById('chat-input').value;
+        if(msg) {
+            viewer.chat(msg);
+            document.getElementById('chat-input').value = '';
+            document.getElementById('chat-overlay').style.display = 'none';
+        }
+    };
 }
