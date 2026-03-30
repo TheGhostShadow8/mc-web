@@ -3,48 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GHOST SHADOW | Bedrock Mobile</title>
+    <title>GHOST SHADOW | Bedrock Mobile UI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="server-box">
-        <div class="status-bar">
-            <div id="status-dot"></div>
-            <span id="status-display-text">SYNCING ENGINE...</span>
-        </div>
-        <h2 style="color: #00ff41;">Ghost Shadow</h2>
+        <div class="status-bar"><div id="status-dot"></div><span id="status-display-text">SYNCING...</span></div>
+        <h2 style="color: #00ff41; letter-spacing: 2px;">GHOST SHADOW</h2>
         
         <div id="auth-step-1">
             <input type="email" id="user-email" placeholder="Email Address">
-            <button id="send-otp-btn">SEND SECURITY CODE</button>
+            <button id="send-otp-btn">SEND OTP</button>
         </div>
-
         <div id="auth-step-2" style="display:none;">
             <input type="number" id="otp-input" placeholder="6-Digit Code">
-            <button id="verify-btn">VERIFY ACCESS</button>
+            <button id="verify-btn">VERIFY</button>
         </div>
-
         <div id="ms-sync" style="display:none;">
-            <button id="real-ms-btn" style="background: #0078d4; color: white;">SYNC MICROSOFT ACCOUNT</button>
+            <button id="real-ms-btn" style="background: #0078d4; color: white;">LINK MICROSOFT ACCOUNT</button>
         </div>
-
         <div id="server-details" style="display:none;">
-            <input type="text" id="server-ip" placeholder="Server IP (hilsha.aternos.host)">
-            <input type="number" id="server-port" placeholder="Port (48439)">
-            <button id="start-btn">LAUNCH BEDROCK ENGINE</button>
+            <input type="text" id="server-ip" placeholder="Server IP">
+            <input type="number" id="server-port" placeholder="Port">
+            <button id="start-btn">LAUNCH ENGINE</button>
         </div>
-        <p id="login-status">Protocol: Encrypted AES-256</p>
     </div>
 
     <div id="loader-container" style="display: none;">
-        <p id="status-text">Initializing...</p>
+        <p id="status-text">Bypassing Firewall...</p>
         <div id="progress-bg"><div id="progress"></div></div>
     </div>
 
     <canvas id="game-canvas"></canvas>
 
     <div id="mobile-controls" style="display: none;">
+        <div class="top-bar">
+            <button id="btn-chat-toggle">💬</button>
+            <button onclick="location.reload()">🔄</button>
+            <button id="btn-settings">⚙️</button>
+        </div>
+
         <div class="dpad">
             <button id="btn-forward" class="ctrl-btn">▲</button>
             <div class="dpad-mid">
@@ -56,21 +55,14 @@
         </div>
 
         <div class="action-btns">
+            <button id="btn-attack" class="action-btn-circle">HIT</button>
+            <button id="btn-use" class="action-btn-circle">USE</button>
             <button id="btn-jump" class="jump-btn">JUMP</button>
         </div>
 
-        <div class="top-bar">
-            <button id="btn-chat">💬</button>
-            <button id="btn-emotes">🎭</button>
-            <button id="btn-settings">⚙️</button>
-        </div>
-
-        <div class="hotbar-container">
-            <div class="hotbar">
-                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-                <div class="slot"></div><div class="slot"></div>
-            </div>
-            <button id="btn-inv" class="inv-btn">🎒</button>
+        <div id="chat-overlay" style="display:none;">
+            <input type="text" id="chat-input" placeholder="Say something or use /command...">
+            <button id="btn-send-chat">SEND</button>
         </div>
     </div>
 
