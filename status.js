@@ -1,56 +1,63 @@
 /**
- * Ghost Shadow Engine - Dynamic Server Status Checker
- * This script monitors the specific IP and Port entered by the user.
+ * GHOST SHADOW ENGINE - LIVE STATUS PROTOCOL
+ * Monitors the Aternos Bedrock server state.
  */
 
 function updateServerStatus() {
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-display-text');
+    const launchBtn = document.getElementById('start-btn');
     
-    // Grab the current values from your index.html input boxes
+    // Grabs values from your index.html inputs
     const currentIP = document.getElementById('server-ip').value;
     const currentPort = document.getElementById('server-port').value;
 
-    if (!currentIP) {
-        statusText.innerText = "Waiting for IP...";
+    if (!currentIP || !currentPort) {
+        statusText.innerText = "WAITING FOR CONFIG...";
         return;
     }
 
-    // API used to check Bedrock/Aternos status
+    // Connects to the Bedrock status API
     const apiUrl = `https://api.mcstatus.io/v2/status/bedrock/${currentIP}:${currentPort}`;
 
     fetch(apiUrl)
         .then(response => {
-            if (!response.ok) throw new Error("Network issue");
+            if (!response.ok) throw new Error("API Offline");
             return response.json();
         })
         .then(data => {
             if (data.online) {
-                // Server is UP
+                // SERVER IS ONLINE
                 statusDot.style.backgroundColor = "#00ff41"; 
-                statusDot.style.boxShadow = "0 0 10px #00ff41";
-                statusText.innerText = `ONLINE | ${data.players.online} Players`;
+                statusDot.style.boxShadow = "0 0 12px #00ff41";
+                statusText.innerText = `ONLINE | ${data.players.online} PLAYERS`;
                 statusText.style.color = "#00ff41";
+                
+                // Optional: Make the launch button glow when ready
+                launchBtn.style.border = "1px solid #00ff41";
             } else {
-                // Server is DOWN
+                // SERVER IS OFFLINE
                 statusDot.style.backgroundColor = "#ff0000"; 
-                statusDot.style.boxShadow = "0 0 10px #ff0000";
-                statusText.innerText = "OFFLINE | Start Aternos";
+                statusDot.style.boxShadow = "0 0 12px #ff0000";
+                statusText.innerText = "OFFLINE | START ATERNOS";
                 statusText.style.color = "#ff4444";
+                
+                launchBtn.style.border = "none";
             }
         })
         .catch(err => {
-            statusText.innerText = "Checking...";
+            statusText.innerText = "SYNCING...";
             statusDot.style.backgroundColor = "#555";
+            statusDot.style.boxShadow = "none";
         });
 }
 
-// 1. Check immediately when the page loads
+// 1. Initialize status check immediately
 updateServerStatus();
 
-// 2. Refresh status every 20 seconds to keep it live
-setInterval(updateServerStatus, 20000);
+// 2. Refresh every 15 seconds (Aternos can take a moment to update)
+setInterval(updateServerStatus, 15000);
 
-// 3. Update status immediately if the user types a new IP/Port
-document.getElementById('server-ip').addEventListener('change', updateServerStatus);
-document.getElementById('server-port').addEventListener('change', updateServerStatus);
+// 3. If you manually change the IP or Port, it updates the light instantly
+document.getElementById('server-ip').addEventListener('input', updateServerStatus);
+document.getElementById('server-port').addEventListener('input', updateServerStatus);
