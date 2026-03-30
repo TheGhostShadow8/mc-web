@@ -2,62 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHOST SHADOW | Bedrock Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GHOST SHADOW | Bedrock Mobile</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Essential overrides to prevent black screen issues */
-        body { background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; overflow: hidden; }
-        #game-canvas { width: 100vw; height: 100vh; display: none; background: #000; position: absolute; top: 0; left: 0; z-index: 1; }
-        #server-box { position: relative; z-index: 10; background: rgba(15, 15, 15, 0.95); border: 2px solid #00ff41; padding: 25px; border-radius: 15px; width: 320px; margin: 50px auto; box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); }
-        input::placeholder { color: #555; }
-    </style>
 </head>
 <body>
 
     <div id="server-box">
-        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px; background: #111; padding: 8px; border-radius: 8px; border: 1px solid #333;">
-            <div id="status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: #555; margin-right: 10px; transition: 0.3s;"></div>
-            <span id="status-display-text" style="font-size: 0.75rem; color: #aaa; font-family: monospace;">SYNCING ENGINE...</span>
+        <div class="status-bar">
+            <div id="status-dot"></div>
+            <span id="status-display-text">SYNCING ENGINE...</span>
         </div>
-
-        <h2 style="color: #00ff41; text-transform: uppercase; letter-spacing: 2px; margin: 10px 0;">Ghost Shadow</h2>
+        <h2 style="color: #00ff41;">Ghost Shadow</h2>
         
         <div id="auth-step-1">
-            <p style="font-size: 0.8rem; color: #888;">Enter registered email to receive OTP</p>
             <input type="email" id="user-email" placeholder="Email Address">
-            <button id="send-otp-btn" style="background: #2e7d32; color: white; width: 100%;">SEND SECURITY CODE</button>
+            <button id="send-otp-btn">SEND SECURITY CODE</button>
         </div>
 
         <div id="auth-step-2" style="display:none;">
-            <p style="font-size: 0.8rem; color: #888;">Check your inbox (use 123456)</p>
             <input type="number" id="otp-input" placeholder="6-Digit Code">
-            <button id="verify-btn" style="background: #00ff41; color: black; width: 100%;">VERIFY ACCESS</button>
+            <button id="verify-btn">VERIFY ACCESS</button>
         </div>
 
         <div id="ms-sync" style="display:none;">
-            <p style="font-size: 0.8rem; color: #aaa;">Sync Xbox Profile for Skin/Progress:</p>
-            <button id="real-ms-btn" style="background: #0078d4; color: white; width: 100%;">SYNC MICROSOFT ACCOUNT</button>
+            <button id="real-ms-btn" style="background: #0078d4; color: white;">SYNC MICROSOFT ACCOUNT</button>
         </div>
 
         <div id="server-details" style="display:none;">
-            <p style="font-size: 0.8rem; color: #00ff41;">System Authenticated</p>
-            <input type="text" id="server-ip" placeholder="Server IP (or Dyn IP)">
-            <input type="number" id="server-port" placeholder="Server Port">
-            <button id="start-btn" style="background: #00ff41; color: black; width: 100%;">LAUNCH BEDROCK ENGINE</button>
+            <input type="text" id="server-ip" placeholder="Server IP (hilsha.aternos.host)">
+            <input type="number" id="server-port" placeholder="Port (48439)">
+            <button id="start-btn">LAUNCH BEDROCK ENGINE</button>
         </div>
-
-        <p id="login-status" style="font-size: 0.7rem; color: #555; margin-top: 15px;">Protocol: Encrypted AES-256</p>
+        <p id="login-status">Protocol: Encrypted AES-256</p>
     </div>
 
-    <div id="loader-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; flex-direction: column; align-items: center; justify-content: center;">
-        <p id="status-text" style="color: #00ff41; font-size: 1rem; margin-bottom: 20px;">Initializing...</p>
-        <div id="progress-bg" style="width: 80%; height: 10px; background: #222; border-radius: 5px; overflow: hidden; border: 1px solid #00ff41;">
-            <div id="progress" style="background: #00ff41; width: 0%; height: 100%; transition: width 0.3s;"></div>
-        </div>
+    <div id="loader-container" style="display: none;">
+        <p id="status-text">Initializing...</p>
+        <div id="progress-bg"><div id="progress"></div></div>
     </div>
 
     <canvas id="game-canvas"></canvas>
+
+    <div id="mobile-controls" style="display: none;">
+        <div class="dpad">
+            <button id="btn-forward" class="ctrl-btn">▲</button>
+            <div class="dpad-mid">
+                <button id="btn-left" class="ctrl-btn">◀</button>
+                <button id="btn-sneak" class="ctrl-btn-small">◆</button>
+                <button id="btn-right" class="ctrl-btn">▶</button>
+            </div>
+            <button id="btn-back" class="ctrl-btn">▼</button>
+        </div>
+
+        <div class="action-btns">
+            <button id="btn-jump" class="jump-btn">JUMP</button>
+        </div>
+
+        <div class="top-bar">
+            <button id="btn-chat">💬</button>
+            <button id="btn-emotes">🎭</button>
+            <button id="btn-settings">⚙️</button>
+        </div>
+
+        <div class="hotbar-container">
+            <div class="hotbar">
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div>
+            </div>
+            <button id="btn-inv" class="inv-btn">🎒</button>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/prismarine-viewer/dist/viewer.js"></script>
     <script src="loader.js"></script>
