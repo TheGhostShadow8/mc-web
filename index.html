@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GHOST SHADOW | Bedrock Mobile UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GHOST SHADOW | Bedrock Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="server-box">
-        <div class="status-bar"><div id="status-dot"></div><span id="status-display-text">SYNCING...</span></div>
+        <div class="status-bar"><div id="status-dot"></div><span id="status-display-text">SYNCING ENGINE...</span></div>
         <h2 style="color: #00ff41; letter-spacing: 2px;">GHOST SHADOW</h2>
         
         <div id="auth-step-1">
@@ -24,14 +24,14 @@
             <button id="real-ms-btn" style="background: #0078d4; color: white;">LINK MICROSOFT ACCOUNT</button>
         </div>
         <div id="server-details" style="display:none;">
-            <input type="text" id="server-ip" placeholder="Server IP (e.g. jackfish.aternos.host)">
+            <input type="text" id="server-ip" placeholder="Server IP (e.g. hilsha.aternos.host)">
             <input type="number" id="server-port" placeholder="Port">
             <button id="start-btn">LAUNCH ENGINE</button>
         </div>
     </div>
 
     <div id="loader-container" style="display: none;">
-        <p id="status-text">Bypassing Firewall...</p>
+        <p id="status-text">Loading Resources...</p>
         <div id="progress-bg"><div id="progress"></div></div>
     </div>
 
@@ -55,13 +55,13 @@
         </div>
 
         <div class="action-btns">
-            <button id="btn-attack" class="action-btn-circle">HIT</button>
-            <button id="btn-use" class="action-btn-circle">USE</button>
-            <button id="btn-jump" class="jump-btn">JUMP</button>
+            <button id="btn-attack" class="action-circle">HIT</button>
+            <button id="btn-use" class="action-circle">USE</button>
+            <button id="btn-jump" class="jump-btn-bedrock">JUMP</button>
         </div>
 
         <div id="chat-overlay" style="display:none;">
-            <input type="text" id="chat-input" placeholder="Type message or /command...">
+            <input type="text" id="chat-input" placeholder="Type a message...">
             <button id="btn-send-chat">SEND</button>
         </div>
     </div>
