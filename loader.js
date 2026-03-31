@@ -1,5 +1,9 @@
+import { handleAutoLogin } from './autologin.js';
+
 const clientID = "5ab6e69d-8770-40e1-9f06-82b647dfbd58"; 
-const redirectUri = "https://theghostshadow8.github.io/mc-web/"; 
+const redirectUri = "https://theghostshadow8.github.io/mc-web/"; // Must match Azure
+
+const clickSound = new Audio('https://www.soundjay.com/buttons/button-16.mp3');
 
 // --- 1. SEQUENTIAL AUTH ---
 document.getElementById('send-otp-btn').onclick = () => {
@@ -22,27 +26,30 @@ if(window.location.hash.includes("access_token")) {
     document.getElementById('server-details').style.display='block';
 }
 
-// --- 2. JOIN LOGIC ---
-document.getElementById('start-btn').onclick = () => {
-    const ip = document.getElementById('server-ip').value.trim();
-    const port = document.getElementById('server-port').value.trim();
-    document.getElementById('server-box').style.display = 'none';
-    document.getElementById('loader-container').style.display = 'flex';
-
-    let prog = 0;
-    const interval = setInterval(() => {
-        prog += 2;
-        document.getElementById('progress').style.width = prog + '%';
-        if(prog >= 100) {
-            clearInterval(interval);
-            document.getElementById('loader-container').style.display = 'none';
-            document.getElementById('game-canvas').style.display = 'block';
-            document.getElementById('mobile-controls').style.display = 'block';
-            document.getElementById('crosshair').style.display = 'block';
-            initEngine(ip, port);
-        }
-    }, 40);
-};
+// --- 2. SPRINT & CONTROLS ---
+let lastTap = 0;
+function setupControls(viewer) {
+    const bind = (id, key) => {
+        const el = document.getElementById(id);
+        el.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            clickSound.play();
+            if(id === 'btn-forward') {
+                const now = Date.now();
+                if(now - lastTap < 300) viewer.setControl('sprint', true), el.classList.add('sprinting');
+                lastTap = now;
+            }
+            viewer.setControl(key, true);
+            el.classList.add('active');
+        });
+        el.addEventListener('touchend', () => {
+            viewer.setControl(key, false);
+            if(key === 'forward') viewer.setControl('sprint', false), el.classList.remove('sprinting');
+            el.classList.remove('active');
+        });
+    };
+    ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
+}
 
 // --- 3. CORE ENGINE ---
 function initEngine(ip, port) {
@@ -52,38 +59,43 @@ function initEngine(ip, port) {
         version: '1.20.1'
     });
 
-    const bind = (id, key) => {
-        const el = document.getElementById(id);
-        el.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            viewer.setControl(key, true);
-            el.classList.add('active');
-            if(navigator.vibrate) navigator.vibrate(40);
-        });
-        el.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            viewer.setControl(key, false);
-            el.classList.remove('active');
-        });
-    };
-
-    ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
-
-    let ty = 0, tp = 0, cy = 0, cp = 0, lx, ly;
-    document.getElementById('game-canvas').addEventListener('touchstart', (e) => { 
-        lx = e.touches[0].pageX; ly = e.touches[0].pageY; 
+    viewer.on('spawn', (player) => {
+        handleAutoLogin(viewer, player.uuid);
+        document.getElementById('coords-hud').style.display = 'block';
     });
+
+    setupControls(viewer);
+
+    // Camera Sensitivity Fix
+    let ty = 0, tp = 0, cy = 0, cp = 0, lx, ly;
     document.getElementById('game-canvas').addEventListener('touchmove', (e) => {
-        ty -= (e.touches[0].pageX - lx) * 0.006;
-        tp -= (e.touches[0].pageY - ly) * 0.006;
+        ty -= (e.touches[0].pageX - lx) * 0.005;
+        tp -= (e.touches[0].pageY - ly) * 0.005;
         lx = e.touches[0].pageX; ly = e.touches[0].pageY;
     });
 
     function loop() {
         cy += (ty - cy) * 0.15; cp += (tp - cp) * 0.15;
         viewer.camera.rotation.y = cy;
-        viewer.camera.rotation.x = Math.max(-1.5, Math.min(1.5, cp));
+        viewer.camera.rotation.x = Math.max(-1.4, Math.min(1.4, cp));
         requestAnimationFrame(loop);
     }
     loop();
 }
+
+document.getElementById('start-btn').onclick = () => {
+    const ip = document.getElementById('server-ip').value;
+    const port = document.getElementById('server-port').value;
+    document.getElementById('server-box').style.display = 'none';
+    document.getElementById('loader-container').style.display = 'flex';
+    setTimeout(() => {
+        document.getElementById('loader-container').style.display = 'none';
+        document.getElementById('game-canvas').style.display = 'block';
+        document.getElementById('mobile-controls').style.display = 'block';
+        initEngine(ip, port);
+    }, 2000);
+};
+
+// Chat & Settings placeholders
+document.getElementById('btn-chat-toggle').onclick = () => { const m = prompt("Chat:"); if(m) viewer.chat(m); };
+document.getElementById('btn-settings').onclick = () => alert("Sensitivity locked to 0.005 for stability.");
