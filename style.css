@@ -1,44 +1,37 @@
 body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; touch-action: none; font-family: sans-serif; }
-#game-canvas { width: 100%; height: 100%; display: none; position: absolute; }
+#game-canvas { width: 100%; height: 100%; display: none; position: absolute; z-index: 1; }
 
-/* FIXED CENTERED BOX */
+#coords-hud { position: absolute; top: 10px; left: 10px; color: white; text-shadow: 2px 2px black; z-index: 10; display: none; font-size: 14px; }
+
+/* RE-CENTERED LOGIN BOX */
 #server-box { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-    background: rgba(15, 15, 15, 0.98); border: 2px solid #00ff41; padding: 30px; 
-    width: 310px; border-radius: 15px; text-align: center; z-index: 100;
+    background: rgba(15, 15, 15, 0.98); border: 2px solid #00ff41; padding: 25px; 
+    width: 300px; border-radius: 15px; text-align: center; z-index: 100;
     display: flex; flex-direction: column; align-items: center;
 }
 
-input { width: 90%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #333; color: #00ff41; border-radius: 5px; outline: none; }
-button { width: 95%; padding: 14px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; }
-
+input { width: 90%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #333; color: #00ff41; border-radius: 5px; outline: none; }
+button { width: 95%; padding: 12px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; }
 .green-btn { background: #00ff41; color: #000; }
-.blue-btn { background: #0078d4; color: #fff; box-shadow: 0 4px #005a9e; }
+.blue-btn { background: #0078d4; color: #fff; }
 
-/* CROSSHAIR */
-#crosshair { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; z-index: 10; display: none; pointer-events: none; }
-.ch-v { position: absolute; width: 2px; height: 100%; left: 8px; background: rgba(255,255,255,0.7); }
-.ch-h { position: absolute; width: 100%; height: 2px; top: 8px; background: rgba(255,255,255,0.7); }
-
-/* BEDROCK HUD */
-.ctrl-btn, .ctrl-btn-small, .action-circle, .jump-btn-bedrock { 
-    pointer-events: auto; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); 
-    color: white; border-radius: 10px; font-weight: bold;
-}
-.active { background: rgba(255, 255, 255, 0.4) !important; }
-
-.dpad { position: absolute; bottom: 40px; left: 40px; display: flex; flex-direction: column; align-items: center; }
+/* BEDROCK BUTTON POSITIONS */
+.dpad { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; align-items: center; z-index: 50; }
 .dpad-mid { display: flex; gap: 5px; }
-.ctrl-btn { width: 65px; height: 65px; font-size: 24px; }
-.ctrl-btn-small { width: 50px; height: 50px; margin: 5px; }
+.ctrl-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); color: white; border-radius: 10px; }
+.ctrl-btn-small { width: 45px; height: 45px; margin: 5px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); color: white; border-radius: 5px; }
 
-.action-btns { position: absolute; bottom: 50px; right: 50px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-.action-circle { width: 75px; height: 75px; border-radius: 50%; }
-.jump-btn-bedrock { width: 100px; height: 100px; border-radius: 50%; }
+.action-btns { position: absolute; bottom: 30px; right: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 50; }
+.action-circle { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); color: white; }
+.jump-btn-bedrock { width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); color: white; }
 
-.hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.5); padding: 4px; border: 2px solid #555; }
-.slot { width: 35px; height: 35px; border: 1px solid #777; margin: 2px; }
-.active-slot { border: 2px solid #fff; }
+.hotbar { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.5); padding: 3px; border: 2px solid #555; z-index: 50; }
+.slot { width: 35px; height: 35px; border: 1px solid #777; margin: 1px; }
 
-.top-bar { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
-.top-bar button { width: 45px; height: 45px; background: rgba(0,0,0,0.4); }
+#crosshair { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; z-index: 5; pointer-events: none; }
+.ch-v { position: absolute; width: 2px; height: 100%; left: 9px; background: #fff; opacity: 0.7; }
+.ch-h { position: absolute; width: 100%; height: 2px; top: 9px; background: #fff; opacity: 0.7; }
+
+.active { background: rgba(255, 255, 255, 0.4) !important; }
+.sprinting { border-color: #00ff41 !important; box-shadow: 0 0 10px #00ff41; }
