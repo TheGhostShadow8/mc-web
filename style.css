@@ -1,149 +1,44 @@
-/* Base Reset */
-body, html { 
-    margin: 0; 
-    padding: 0; 
-    height: 100%; 
-    width: 100%; 
-    background: #000; 
-    overflow: hidden; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    touch-action: none;
-}
+body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; touch-action: none; font-family: sans-serif; }
+#game-canvas { width: 100%; height: 100%; display: none; position: absolute; }
 
-#game-canvas { 
-    width: 100%; 
-    height: 100%; 
-    display: none; 
-    position: absolute; 
-    z-index: 1; 
-}
-
-/* --- THE FIX: Centering the Login Box --- */
+/* FIXED CENTERED BOX */
 #server-box { 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Keeps it perfectly centered on any screen */
-    z-index: 100; 
-    background: rgba(15, 15, 15, 0.95); 
-    border: 2px solid #00ff41; 
-    padding: 30px; 
-    width: 320px; 
-    border-radius: 12px; 
-    text-align: center;
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-    display: flex;
-    flex-direction: column; /* Stacks items vertically */
-    align-items: center;    /* Centers items horizontally */
-    justify-content: center;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+    background: rgba(15, 15, 15, 0.98); border: 2px solid #00ff41; padding: 30px; 
+    width: 310px; border-radius: 15px; text-align: center; z-index: 100;
+    display: flex; flex-direction: column; align-items: center;
 }
 
-/* Input Fields */
-input { 
-    width: 90%; 
-    padding: 12px; 
-    margin: 10px 0; 
-    background: #1a1a1a; 
-    border: 1px solid #333; 
-    color: #00ff41; 
-    border-radius: 6px;
-    outline: none;
-    transition: 0.3s;
-}
+input { width: 90%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #333; color: #00ff41; border-radius: 5px; outline: none; }
+button { width: 95%; padding: 14px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; }
 
-input:focus {
-    border-color: #00ff41;
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
-}
+.green-btn { background: #00ff41; color: #000; }
+.blue-btn { background: #0078d4; color: #fff; box-shadow: 0 4px #005a9e; }
 
-/* Buttons */
-button { 
-    width: 95%; 
-    padding: 14px; 
-    margin-top: 10px;
-    cursor: pointer; 
-    border: none; 
-    font-weight: bold; 
-    border-radius: 6px; 
-    text-transform: uppercase;
-    transition: 0.2s;
-}
+/* CROSSHAIR */
+#crosshair { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; z-index: 10; display: none; pointer-events: none; }
+.ch-v { position: absolute; width: 2px; height: 100%; left: 8px; background: rgba(255,255,255,0.7); }
+.ch-h { position: absolute; width: 100%; height: 2px; top: 8px; background: rgba(255,255,255,0.7); }
 
-#start-btn { background: #00ff41; color: black; }
-#start-btn:active { transform: scale(0.96); background: #00cc33; }
-
-#real-ms-btn { 
-    background: #0078d4; 
-    color: white; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    gap: 10px;
-}
-
-/* Status Light */
-.status-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 15px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-#status-dot { 
-    width: 10px; 
-    height: 10px; 
-    background: #555; 
-    border-radius: 50%; 
-}
-
-/* Mobile Controls Layer */
-#mobile-controls { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100vw; 
-    height: 100vh; 
-    z-index: 50; 
-    pointer-events: none; 
-}
-
+/* BEDROCK HUD */
 .ctrl-btn, .ctrl-btn-small, .action-circle, .jump-btn-bedrock { 
-    pointer-events: auto; 
-    background: rgba(255, 255, 255, 0.1); 
-    border: 2px solid rgba(255, 255, 255, 0.2); 
-    color: white; 
-    border-radius: 8px;
+    pointer-events: auto; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); 
+    color: white; border-radius: 10px; font-weight: bold;
 }
+.active { background: rgba(255, 255, 255, 0.4) !important; }
 
-.active { background: rgba(255, 255, 255, 0.3) !important; }
-
-/* D-Pad */
-.dpad { position: absolute; bottom: 30px; left: 30px; display: flex; flex-direction: column; align-items: center; }
+.dpad { position: absolute; bottom: 40px; left: 40px; display: flex; flex-direction: column; align-items: center; }
 .dpad-mid { display: flex; gap: 5px; }
-.ctrl-btn { width: 60px; height: 60px; font-size: 22px; }
-.ctrl-btn-small { width: 45px; height: 45px; margin: 5px; }
+.ctrl-btn { width: 65px; height: 65px; font-size: 24px; }
+.ctrl-btn-small { width: 50px; height: 50px; margin: 5px; }
 
-/* Action Side */
-.action-btns { position: absolute; bottom: 40px; right: 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.action-circle { width: 70px; height: 70px; border-radius: 50%; }
-.jump-btn-bedrock { width: 90px; height: 90px; border-radius: 50%; }
+.action-btns { position: absolute; bottom: 50px; right: 50px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.action-circle { width: 75px; height: 75px; border-radius: 50%; }
+.jump-btn-bedrock { width: 100px; height: 100px; border-radius: 50%; }
 
-/* Loading Bar */
-#loader-container { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: #000; 
-    z-index: 200; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-}
+.hotbar { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(0,0,0,0.5); padding: 4px; border: 2px solid #555; }
+.slot { width: 35px; height: 35px; border: 1px solid #777; margin: 2px; }
+.active-slot { border: 2px solid #fff; }
 
-#progress-bg { width: 250px; height: 6px; background: #222; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-#progress { height: 100%; background: #00ff41; width: 0%; transition: width 0.1s; }
+.top-bar { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
+.top-bar button { width: 45px; height: 45px; background: rgba(0,0,0,0.4); }
