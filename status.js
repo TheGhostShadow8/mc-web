@@ -3,16 +3,15 @@
  * Monitors the Aternos Bedrock server state.
  */
 
-function updateServerStatus() {
+async function updateServerStatus() {
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-display-text');
     const launchBtn = document.getElementById('start-btn');
     
-    // Grabs values from your index.html inputs
     const currentIP = document.getElementById('server-ip').value;
-    const currentPort = document.getElementById('server-port').value;
+    const currentPort = document.getElementById('server-port').value || "19132";
 
-    if (!currentIP || !currentPort) {
+    if (!currentIP) {
         statusText.innerText = "WAITING FOR CONFIG...";
         return;
     }
@@ -20,44 +19,42 @@ function updateServerStatus() {
     // Connects to the Bedrock status API
     const apiUrl = `https://api.mcstatus.io/v2/status/bedrock/${currentIP}:${currentPort}`;
 
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error("API Offline");
-            return response.json();
-        })
-        .then(data => {
-            if (data.online) {
-                // SERVER IS ONLINE
-                statusDot.style.backgroundColor = "#00ff41"; 
-                statusDot.style.boxShadow = "0 0 12px #00ff41";
-                statusText.innerText = `ONLINE | ${data.players.online} PLAYERS`;
-                statusText.style.color = "#00ff41";
-                
-                // Optional: Make the launch button glow when ready
-                launchBtn.style.border = "1px solid #00ff41";
-            } else {
-                // SERVER IS OFFLINE
-                statusDot.style.backgroundColor = "#ff0000"; 
-                statusDot.style.boxShadow = "0 0 12px #ff0000";
-                statusText.innerText = "OFFLINE | START ATERNOS";
-                statusText.style.color = "#ff4444";
-                
-                launchBtn.style.border = "none";
-            }
-        })
-        .catch(err => {
-            statusText.innerText = "SYNCING...";
-            statusDot.style.backgroundColor = "#555";
-            statusDot.style.boxShadow = "none";
-        });
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("API Offline");
+        const data = await response.json();
+
+        if (data.online) {
+            // SERVER IS ONLINE
+            statusDot.style.backgroundColor = "#00ff41"; 
+            statusDot.style.boxShadow = "0 0 12px #00ff41";
+            statusText.innerText = `ONLINE | ${data.players.online} PLAYERS`;
+            statusText.style.color = "#00ff41";
+            
+            // Apply green border to Join button when ready
+            if(launchBtn) launchBtn.style.border = "2px solid #00ff41";
+        } else {
+            // SERVER IS OFFLINE
+            statusDot.style.backgroundColor = "#ff0000"; 
+            statusDot.style.boxShadow = "0 0 12px #ff0000";
+            statusText.innerText = "OFFLINE | START ATERNOS";
+            statusText.style.color = "#ff4444";
+            
+            if(launchBtn) launchBtn.style.border = "none";
+        }
+    } catch (err) {
+        statusText.innerText = "SYNCING...";
+        statusDot.style.backgroundColor = "#555";
+        statusDot.style.boxShadow = "none";
+    }
 }
 
-// 1. Initialize status check immediately
+// Initialize status check
 updateServerStatus();
 
-// 2. Refresh every 15 seconds (Aternos can take a moment to update)
+// Refresh every 15 seconds
 setInterval(updateServerStatus, 15000);
 
-// 3. If you manually change the IP or Port, it updates the light instantly
+// Instant update on input
 document.getElementById('server-ip').addEventListener('input', updateServerStatus);
 document.getElementById('server-port').addEventListener('input', updateServerStatus);
