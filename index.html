@@ -24,10 +24,21 @@
         <div id="ms-sync" style="display:none;">
             <button id="real-ms-btn" class="blue-btn">LOGIN WITH MICROSOFT</button>
         </div>
+
         <div id="server-details" style="display:none;">
             <input type="text" id="server-ip" placeholder="Server IP (Aternos)">
             <input type="number" id="server-port" placeholder="Port" value="19132">
+            
+            <select id="server-version" style="width: 95%; padding: 10px; margin: 8px 0; background: #111; color: #00ff41; border: 1px solid #333; border-radius: 5px; outline: none;">
+                <option value="auto" selected>AUTO-DETECT VERSION</option>
+                <option value="1.21.0">Bedrock 1.21.0</option>
+                <option value="1.20.80">Bedrock 1.20.80</option>
+                <option value="1.20.1">Bedrock 1.20.1</option>
+                <option value="1.19.50">Bedrock 1.19.50</option>
+            </select>
+
             <button id="start-btn" class="green-btn">JOIN SERVER</button>
+            <p id="version-loader-text" style="color: #888; font-size: 12px; margin-top: 5px; display: none;">Detecting protocol...</p>
         </div>
     </div>
 
