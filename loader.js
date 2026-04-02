@@ -5,6 +5,14 @@ const redirectUri = "https://theghostshadow8.github.io/mc-web/"; // Must match A
 
 const clickSound = new Audio('https://www.soundjay.com/buttons/button-16.mp3');
 
+// --- 0. HELPER FUNCTIONS ---
+const fetchWithTimeout = (url, options, timeout = 5000) => {
+    return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+    ]);
+};
+
 // --- 1. SEQUENTIAL AUTH ---
 document.getElementById('send-otp-btn').onclick = () => {
     document.getElementById('auth-step-1').style.display='none';
@@ -51,23 +59,31 @@ function setupControls(viewer) {
     ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
 }
 
-// --- 3. CORE ENGINE (UPGRADED WITH AUTO-VERSION) ---
+// --- 3. CORE ENGINE ---
 function initEngine(ip, port, version) {
-    // Uses the passed version from the auto-detector or manual dropdown
+    const canvas = document.getElementById('game-canvas');
+    
+    // Ensure canvas matches window size immediately to prevent black screen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
     const viewer = new PrismarineViewer({
-        canvas: document.getElementById('game-canvas'),
-        proxyAddress: `wss://proxy.prismarine.org/?address=${ip}&port=${port}`, 
+        canvas: canvas,
+        proxyAddress: `wss://proxy.prismarine.org/?address=${ip}&port=${port}`,
         version: version 
     });
 
+    // FORCE RENDER START & Mobile Optimization
+    viewer.setViewingDistance(4); // Lower distance for mobile stability
+    
     viewer.on('spawn', (player) => {
+        console.log("Spawned!");
         handleAutoLogin(viewer, player.uuid);
         document.getElementById('coords-hud').style.display = 'block';
     });
 
     setupControls(viewer);
 
-    // Chat and Settings interaction
     document.getElementById('btn-chat-toggle').onclick = () => { 
         const m = prompt("Chat:"); 
         if(m) viewer.chat(m); 
@@ -76,9 +92,8 @@ function initEngine(ip, port, version) {
         alert(`Engine Protocol: ${version}\nSensitivity: 0.005`);
     };
 
-    // Camera Sensitivity Fix
     let ty = 0, tp = 0, cy = 0, cp = 0, lx, ly;
-    document.getElementById('game-canvas').addEventListener('touchmove', (e) => {
+    canvas.addEventListener('touchmove', (e) => {
         ty -= (e.touches[0].pageX - lx) * 0.005;
         tp -= (e.touches[0].pageY - ly) * 0.005;
         lx = e.touches[0].pageX; ly = e.touches[0].pageY;
@@ -93,7 +108,7 @@ function initEngine(ip, port, version) {
     loop();
 }
 
-// --- 4. START BUTTON LOGIC WITH AUTO-DETECTION ---
+// --- 4. START BUTTON LOGIC ---
 document.getElementById('start-btn').onclick = async () => {
     const ip = document.getElementById('server-ip').value;
     const port = document.getElementById('server-port').value;
@@ -102,26 +117,26 @@ document.getElementById('start-btn').onclick = async () => {
 
     if (version === "auto") {
         loaderText.style.display = "block";
-        loaderText.innerText = "DETECTING VERSION...";
-        
+        loaderText.innerText = "PINGING SERVER...";
         try {
-            const response = await fetch(`https://api.mcstatus.io/v2/status/bedrock/${ip}:${port}`);
+            // Use timeout so detection doesn't hang the screen
+            const response = await fetchWithTimeout(`https://api.mcstatus.io/v2/status/bedrock/${ip}:${port}`);
             const data = await response.json();
-            
             if (data.online && data.version) {
-                // Extracts version (e.g., "1.20.1") from the server data
-                version = data.version.name.split(' ').pop(); 
+                version = data.version.name.split(' ').pop();
                 loaderText.innerText = `PROTOCOL MATCHED: ${version}`;
             } else {
-                version = "1.20.80"; // Fallback
-                loaderText.innerText = "VERSION NOT FOUND - USING 1.20.80";
+                version = "1.20.80"; 
+                loaderText.innerText = "USING DEFAULT 1.20.80";
             }
         } catch (e) {
+            console.log("Auto-detect failed, using fallback");
             version = "1.20.80";
-            loaderText.innerText = "CONNECTION ERROR - USING DEFAULT 1.20.80";
+            loaderText.innerText = "TIMEOUT: USING 1.20.80";
         }
     }
 
+    // Proceed to loading sequence
     setTimeout(() => {
         document.getElementById('server-box').style.display = 'none';
         document.getElementById('loader-container').style.display = 'flex';
