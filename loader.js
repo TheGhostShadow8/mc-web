@@ -51,12 +51,16 @@ function setupControls(viewer) {
     ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
 }
 
-// --- 3. CORE ENGINE ---
+// --- 3. CORE ENGINE (DYNAMIC VERSION) ---
 function initEngine(ip, port) {
+    // Get the version from the dropdown or default to 1.20.80
+    const selectedVersion = document.getElementById('server-version').value || '1.20.80'; 
+
     const viewer = new PrismarineViewer({
         canvas: document.getElementById('game-canvas'),
-        proxyAddress: `wss://proxy.prismarine.org/?address=${ip}&port=${port}`,
-        version: '1.20.1'
+        // Robust proxy for multiple protocols
+        proxyAddress: `wss://proxy.prismarine.org/?address=${ip}&port=${port}`, 
+        version: selectedVersion 
     });
 
     viewer.on('spawn', (player) => {
@@ -65,6 +69,15 @@ function initEngine(ip, port) {
     });
 
     setupControls(viewer);
+
+    // FIX: Make Chat and Settings work with the active viewer
+    document.getElementById('btn-chat-toggle').onclick = () => { 
+        const m = prompt("Chat:"); 
+        if(m) viewer.chat(m); 
+    };
+    document.getElementById('btn-settings').onclick = () => {
+        alert(`Currently running version: ${selectedVersion}\nSensitivity: 0.005`);
+    };
 
     // Camera Sensitivity Fix
     let ty = 0, tp = 0, cy = 0, cp = 0, lx, ly;
@@ -95,7 +108,3 @@ document.getElementById('start-btn').onclick = () => {
         initEngine(ip, port);
     }, 2000);
 };
-
-// Chat & Settings placeholders
-document.getElementById('btn-chat-toggle').onclick = () => { const m = prompt("Chat:"); if(m) viewer.chat(m); };
-document.getElementById('btn-settings').onclick = () => alert("Sensitivity locked to 0.005 for stability.");
