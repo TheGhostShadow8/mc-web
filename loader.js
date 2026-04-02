@@ -51,16 +51,13 @@ function setupControls(viewer) {
     ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
 }
 
-// --- 3. CORE ENGINE (DYNAMIC VERSION) ---
-function initEngine(ip, port) {
-    // Get the version from the dropdown or default to 1.20.80
-    const selectedVersion = document.getElementById('server-version').value || '1.20.80'; 
-
+// --- 3. CORE ENGINE (UPGRADED WITH AUTO-VERSION) ---
+function initEngine(ip, port, version) {
+    // Uses the passed version from the auto-detector or manual dropdown
     const viewer = new PrismarineViewer({
         canvas: document.getElementById('game-canvas'),
-        // Robust proxy for multiple protocols
         proxyAddress: `wss://proxy.prismarine.org/?address=${ip}&port=${port}`, 
-        version: selectedVersion 
+        version: version 
     });
 
     viewer.on('spawn', (player) => {
@@ -70,13 +67,13 @@ function initEngine(ip, port) {
 
     setupControls(viewer);
 
-    // FIX: Make Chat and Settings work with the active viewer
+    // Chat and Settings interaction
     document.getElementById('btn-chat-toggle').onclick = () => { 
         const m = prompt("Chat:"); 
         if(m) viewer.chat(m); 
     };
     document.getElementById('btn-settings').onclick = () => {
-        alert(`Currently running version: ${selectedVersion}\nSensitivity: 0.005`);
+        alert(`Engine Protocol: ${version}\nSensitivity: 0.005`);
     };
 
     // Camera Sensitivity Fix
@@ -96,15 +93,44 @@ function initEngine(ip, port) {
     loop();
 }
 
-document.getElementById('start-btn').onclick = () => {
+// --- 4. START BUTTON LOGIC WITH AUTO-DETECTION ---
+document.getElementById('start-btn').onclick = async () => {
     const ip = document.getElementById('server-ip').value;
     const port = document.getElementById('server-port').value;
-    document.getElementById('server-box').style.display = 'none';
-    document.getElementById('loader-container').style.display = 'flex';
+    let version = document.getElementById('server-version').value;
+    const loaderText = document.getElementById('version-loader-text');
+
+    if (version === "auto") {
+        loaderText.style.display = "block";
+        loaderText.innerText = "DETECTING VERSION...";
+        
+        try {
+            const response = await fetch(`https://api.mcstatus.io/v2/status/bedrock/${ip}:${port}`);
+            const data = await response.json();
+            
+            if (data.online && data.version) {
+                // Extracts version (e.g., "1.20.1") from the server data
+                version = data.version.name.split(' ').pop(); 
+                loaderText.innerText = `PROTOCOL MATCHED: ${version}`;
+            } else {
+                version = "1.20.80"; // Fallback
+                loaderText.innerText = "VERSION NOT FOUND - USING 1.20.80";
+            }
+        } catch (e) {
+            version = "1.20.80";
+            loaderText.innerText = "CONNECTION ERROR - USING DEFAULT 1.20.80";
+        }
+    }
+
     setTimeout(() => {
-        document.getElementById('loader-container').style.display = 'none';
-        document.getElementById('game-canvas').style.display = 'block';
-        document.getElementById('mobile-controls').style.display = 'block';
-        initEngine(ip, port);
-    }, 2000);
+        document.getElementById('server-box').style.display = 'none';
+        document.getElementById('loader-container').style.display = 'flex';
+        
+        setTimeout(() => {
+            document.getElementById('loader-container').style.display = 'none';
+            document.getElementById('game-canvas').style.display = 'block';
+            document.getElementById('mobile-controls').style.display = 'block';
+            initEngine(ip, port, version); 
+        }, 2000);
+    }, 1000);
 };
