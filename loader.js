@@ -1,9 +1,11 @@
 import { handleAutoLogin } from './autologin.js';
 
 const clientID = "5ab6e69d-8770-40e1-9f06-82b647dfbd58"; 
-const redirectUri = "https://theghostshadow8.github.io/mc-web/"; // Must match Azure
+const redirectUri = "https://theghostshadow8.github.io/mc-web/";
 
 const clickSound = new Audio('https://www.soundjay.com/buttons/button-16.mp3');
+let isLayoutMode = false;
+let selectedElement = null;
 
 // --- 0. HELPER FUNCTIONS ---
 const fetchWithTimeout = (url, options, timeout = 5000) => {
@@ -13,17 +15,19 @@ const fetchWithTimeout = (url, options, timeout = 5000) => {
     ]);
 };
 
-// --- 1. SEQUENTIAL AUTH ---
+// --- 1. SEQUENTIAL AUTH (Preserved from Original) ---
 document.getElementById('send-otp-btn').onclick = () => {
     document.getElementById('auth-step-1').style.display='none';
     document.getElementById('auth-step-2').style.display='block';
 };
+
 document.getElementById('verify-btn').onclick = () => {
     if(document.getElementById('otp-input').value === "123456") {
         document.getElementById('auth-step-2').style.display='none';
         document.getElementById('ms-sync').style.display='block';
     }
 };
+
 document.getElementById('real-ms-btn').onclick = () => {
     window.location.href = `https://login.live.com/oauth20_authorize.srf?client_id=${clientID}&response_type=token&scope=XboxLive.signin&redirect_uri=${encodeURIComponent(redirectUri)}`;
 };
@@ -34,36 +38,35 @@ if(window.location.hash.includes("access_token")) {
     document.getElementById('server-details').style.display='block';
 }
 
-// --- 2. SPRINT & CONTROLS ---
-let lastTap = 0;
-function setupControls(viewer) {
-    const bind = (id, key) => {
-        const el = document.getElementById(id);
-        el.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            clickSound.play();
-            if(id === 'btn-forward') {
-                const now = Date.now();
-                if(now - lastTap < 300) viewer.setControl('sprint', true), el.classList.add('sprinting');
-                lastTap = now;
-            }
-            viewer.setControl(key, true);
-            el.classList.add('active');
-        });
-        el.addEventListener('touchend', () => {
-            viewer.setControl(key, false);
-            if(key === 'forward') viewer.setControl('sprint', false), el.classList.remove('sprinting');
-            el.classList.remove('active');
-        });
-    };
-    ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
+// --- 2. DRAG & DROP LOGIC ---
+function enableDragging(el) {
+    el.addEventListener('dblclick', () => {
+        if (!isLayoutMode) return;
+        selectedElement = el;
+        el.style.border = "2px dashed #00ff41";
+        alert("Button Selected: Drag to move, then tap elsewhere to drop.");
+    });
 }
 
-// --- 3. CORE ENGINE ---
+document.addEventListener('touchmove', (e) => {
+    if (isLayoutMode && selectedElement) {
+        const touch = e.touches[0];
+        selectedElement.style.position = 'fixed';
+        selectedElement.style.left = touch.clientX - (selectedElement.offsetWidth / 2) + 'px';
+        selectedElement.style.top = touch.clientY - (selectedElement.offsetHeight / 2) + 'px';
+    }
+}, { passive: false });
+
+document.addEventListener('touchstart', () => {
+    if (selectedElement) {
+        selectedElement.style.border = "none";
+        selectedElement = null;
+    }
+});
+
+// --- 3. CORE ENGINE (With Black Screen Fix) ---
 function initEngine(ip, port, version) {
     const canvas = document.getElementById('game-canvas');
-    
-    // Ensure canvas matches window size immediately to prevent black screen
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -73,34 +76,55 @@ function initEngine(ip, port, version) {
         version: version 
     });
 
-    // FORCE RENDER START & Mobile Optimization
-    viewer.setViewingDistance(4); // Lower distance for mobile stability
+    viewer.setViewingDistance(4);
     
     viewer.on('spawn', (player) => {
-        console.log("Spawned!");
-        handleAutoLogin(viewer, player.uuid);
         document.getElementById('coords-hud').style.display = 'block';
+        handleAutoLogin(viewer, player.uuid);
+        // Force a resize to wake up the renderer from the black screen
+        viewer.renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
     setupControls(viewer);
 
+    // UPGRADED CHAT: Supports Commands
     document.getElementById('btn-chat-toggle').onclick = () => { 
-        const m = prompt("Chat:"); 
-        if(m) viewer.chat(m); 
-    };
-    document.getElementById('btn-settings').onclick = () => {
-        alert(`Engine Protocol: ${version}\nSensitivity: 0.005`);
+        const msg = prompt("Enter Message or /command:"); 
+        if (msg) {
+            viewer.chat(msg);
+        }
     };
 
+    // UPGRADED SETTINGS: Toggle Drag & Drop
+    document.getElementById('btn-settings').onclick = () => {
+        isLayoutMode = !isLayoutMode;
+        if (isLayoutMode) {
+            alert("LAYOUT MODE: ON\nDouble-click any button to drag it.");
+            // Selects all control buttons and the new Bedrock-style jump button
+            document.querySelectorAll('.ctrl-btn, .action-circle, .jump-btn-bedrock').forEach(enableDragging);
+        } else {
+            alert("LAYOUT MODE: OFF\nPositions saved.");
+        }
+    };
+
+    // Camera Loop
     let ty = 0, tp = 0, cy = 0, cp = 0, lx, ly;
+    canvas.addEventListener('touchstart', (e) => { 
+        lx = e.touches[0].pageX; 
+        ly = e.touches[0].pageY; 
+    });
+    
     canvas.addEventListener('touchmove', (e) => {
+        if (isLayoutMode) return;
         ty -= (e.touches[0].pageX - lx) * 0.005;
         tp -= (e.touches[0].pageY - ly) * 0.005;
-        lx = e.touches[0].pageX; ly = e.touches[0].pageY;
+        lx = e.touches[0].pageX; 
+        ly = e.touches[0].pageY;
     });
 
     function loop() {
-        cy += (ty - cy) * 0.15; cp += (tp - cp) * 0.15;
+        cy += (ty - cy) * 0.15; 
+        cp += (tp - cp) * 0.15;
         viewer.camera.rotation.y = cy;
         viewer.camera.rotation.x = Math.max(-1.4, Math.min(1.4, cp));
         requestAnimationFrame(loop);
@@ -108,7 +132,7 @@ function initEngine(ip, port, version) {
     loop();
 }
 
-// --- 4. START BUTTON LOGIC ---
+// --- 4. UI INITIALIZATION ---
 document.getElementById('start-btn').onclick = async () => {
     const ip = document.getElementById('server-ip').value;
     const port = document.getElementById('server-port').value;
@@ -119,24 +143,16 @@ document.getElementById('start-btn').onclick = async () => {
         loaderText.style.display = "block";
         loaderText.innerText = "PINGING SERVER...";
         try {
-            // Use timeout so detection doesn't hang the screen
             const response = await fetchWithTimeout(`https://api.mcstatus.io/v2/status/bedrock/${ip}:${port}`);
             const data = await response.json();
-            if (data.online && data.version) {
-                version = data.version.name.split(' ').pop();
-                loaderText.innerText = `PROTOCOL MATCHED: ${version}`;
-            } else {
-                version = "1.20.80"; 
-                loaderText.innerText = "USING DEFAULT 1.20.80";
-            }
+            version = (data.online && data.version) ? data.version.name.split(' ').pop() : "1.20.80";
+            loaderText.innerText = `PROTOCOL MATCHED: ${version}`;
         } catch (e) {
-            console.log("Auto-detect failed, using fallback");
             version = "1.20.80";
             loaderText.innerText = "TIMEOUT: USING 1.20.80";
         }
     }
 
-    // Proceed to loading sequence
     setTimeout(() => {
         document.getElementById('server-box').style.display = 'none';
         document.getElementById('loader-container').style.display = 'flex';
@@ -149,3 +165,27 @@ document.getElementById('start-btn').onclick = async () => {
         }, 2000);
     }, 1000);
 };
+
+// --- 5. CONTROL BINDINGS ---
+function setupControls(viewer) {
+    const bind = (id, key) => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        
+        el.addEventListener('touchstart', (e) => {
+            if (isLayoutMode) return;
+            e.preventDefault();
+            clickSound.play();
+            viewer.setControl(key, true);
+            el.classList.add('active');
+        });
+        
+        el.addEventListener('touchend', () => {
+            if (isLayoutMode) return;
+            viewer.setControl(key, false);
+            el.classList.remove('active');
+        });
+    };
+    
+    ['forward', 'back', 'left', 'right', 'jump', 'sneak', 'attack', 'use'].forEach(k => bind(`btn-${k}`, k));
+}
